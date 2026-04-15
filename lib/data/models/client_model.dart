@@ -31,6 +31,12 @@ class ClientModel {
   @HiveField(8)
   final DateTime createdAt;
 
+  @HiveField(9)
+  final String? gstin; // GST Identification Number
+
+  @HiveField(10)
+  final String? pan;   // PAN Card Number
+
   ClientModel({
     required this.id,
     required this.name,
@@ -41,6 +47,8 @@ class ClientModel {
     this.totalInvoiced = 0.0,
     this.outstandingAmount = 0.0,
     DateTime? createdAt,
+    this.gstin,
+    this.pan,
   }) : createdAt = createdAt ?? DateTime.now();
 
   ClientModel copyWith({
@@ -53,6 +61,8 @@ class ClientModel {
     double? totalInvoiced,
     double? outstandingAmount,
     DateTime? createdAt,
+    String? gstin,
+    String? pan,
   }) {
     return ClientModel(
       id: id ?? this.id,
@@ -64,21 +74,9 @@ class ClientModel {
       totalInvoiced: totalInvoiced ?? this.totalInvoiced,
       outstandingAmount: outstandingAmount ?? this.outstandingAmount,
       createdAt: createdAt ?? this.createdAt,
+      gstin: gstin ?? this.gstin,
+      pan: pan ?? this.pan,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'company': company,
-      'address': address,
-      'totalInvoiced': totalInvoiced,
-      'outstandingAmount': outstandingAmount,
-      'createdAt': createdAt.toIso8601String(),
-    };
   }
 
   @override

@@ -56,5 +56,7 @@ class HiveHelper {
   static Future<void> clearAllData() async {
     await getUserBox().clear();
     await getAuthBox().clear();
+    await Hive.box('invoicesBox').clear();
+    await Hive.box('clientsBox').clear();
   }
 }

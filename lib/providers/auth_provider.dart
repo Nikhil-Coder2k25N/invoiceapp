@@ -27,23 +27,25 @@ class AuthProvider extends ChangeNotifier {
     required String fullName,
     required String email,
     required String password,
+    String? businessName,
+    String? phone,
   }) async {
     _setLoading(true);
     _clearError();
-
     try {
       final user = await _authRepository.signUp(
         fullName: fullName,
         email: email,
         password: password,
+        businessName: businessName,
+        phone: phone,
       );
-
       _currentUser = user;
       _setLoading(false);
       notifyListeners();
       return true;
     } catch (e) {
-      _setError(e.toString());
+      _setError(e.toString().replaceAll('Exception: ', ''));
       _setLoading(false);
       return false;
     }
@@ -55,19 +57,17 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     _setLoading(true);
     _clearError();
-
     try {
       final user = await _authRepository.signIn(
         email: email,
         password: password,
       );
-
       _currentUser = user;
       _setLoading(false);
       notifyListeners();
       return true;
     } catch (e) {
-      _setError(e.toString());
+      _setError(e.toString().replaceAll('Exception: ', ''));
       _setLoading(false);
       return false;
     }
@@ -77,6 +77,40 @@ class AuthProvider extends ChangeNotifier {
     await _authRepository.signOut();
     _currentUser = null;
     notifyListeners();
+  }
+
+  Future<bool> updateProfile({
+    String? fullName,
+    String? businessName,
+    String? gstin,
+    String? phone,
+    String? address,
+    String? state,
+  }) async {
+    _setLoading(true);
+    try {
+      if (_currentUser != null) {
+        final updated = _currentUser!.copyWith(
+          fullName: fullName,
+          businessName: businessName,
+          gstin: gstin,
+          phone: phone,
+          address: address,
+          state: state,
+        );
+        await _authRepository.updateUser(updated);
+        _currentUser = updated;
+        _setLoading(false);
+        notifyListeners();
+        return true;
+      }
+      _setLoading(false);
+      return false;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
   }
 
   void _setLoading(bool value) {
