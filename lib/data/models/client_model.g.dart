@@ -23,16 +23,18 @@ class ClientModelAdapter extends TypeAdapter<ClientModel> {
       phone: fields[3] as String?,
       company: fields[4] as String?,
       address: fields[5] as String?,
-      totalInvoiced: fields[6] as double,
-      outstandingAmount: fields[7] as double,
-      createdAt: fields[8] as DateTime?,
+      totalInvoiced: fields[6] == null ? 0.0 : fields[6] as double,
+      outstandingAmount: fields[7] == null ? 0.0 : fields[7] as double,
+      createdAt: fields[8] as DateTime,
+      gstin: fields[9] as String?,
+      pan: fields[10] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ClientModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,7 +52,11 @@ class ClientModelAdapter extends TypeAdapter<ClientModel> {
       ..writeByte(7)
       ..write(obj.outstandingAmount)
       ..writeByte(8)
-      ..write(obj.createdAt);
+      ..write(obj.createdAt)
+      ..writeByte(9)
+      ..write(obj.gstin)
+      ..writeByte(10)
+      ..write(obj.pan);
   }
 
   @override

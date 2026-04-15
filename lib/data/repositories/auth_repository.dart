@@ -6,54 +6,46 @@ class AuthRepository {
     required String fullName,
     required String email,
     required String password,
+    String? businessName,
+    String? phone,
   }) async {
-    try {
-      final existingUser = HiveHelper.getUser(email);
-
-      if (existingUser != null) {
-        throw Exception('User already exists');
-      }
-
-      final user = UserModel(
-        fullName: fullName,
-        email: email,
-        password: password,
-      );
-
-      await HiveHelper.saveUser(user);
-      await HiveHelper.setCurrentUser(user);
-
-      return user;
-    } catch (e) {
-      rethrow;
+    final existingUser = HiveHelper.getUser(email);
+    if (existingUser != null) {
+      throw Exception('An account with this email already exists');
     }
+    final user = UserModel(
+      fullName: fullName,
+      email: email,
+      password: password,
+      businessName: businessName,
+      phone: phone,
+    );
+    await HiveHelper.saveUser(user);
+    await HiveHelper.setCurrentUser(user);
+    return user;
   }
 
   Future<UserModel?> signIn({
     required String email,
     required String password,
   }) async {
-    try {
-      final user = HiveHelper.getUser(email);
-
-      if (user == null) {
-        throw Exception('User not found');
-      }
-
-      if (user.password != password) {
-        throw Exception('Invalid password');
-      }
-
-      await HiveHelper.setCurrentUser(user);
-
-      return user;
-    } catch (e) {
-      rethrow;
+    final user = HiveHelper.getUser(email);
+    if (user == null) {
+      throw Exception('No account found with this email');
     }
+    if (user.password != password) {
+      throw Exception('Incorrect password. Please try again.');
+    }
+    await HiveHelper.setCurrentUser(user);
+    return user;
   }
 
   Future<void> signOut() async {
     await HiveHelper.logout();
+  }
+
+  Future<void> updateUser(UserModel user) async {
+    await HiveHelper.saveUser(user);
   }
 
   UserModel? getCurrentUser() {
